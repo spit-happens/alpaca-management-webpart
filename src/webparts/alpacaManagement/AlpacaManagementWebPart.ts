@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
+import "whatwg-fetch"
 import { Version } from '@microsoft/sp-core-library';
 import {
   BaseClientSideWebPart,
@@ -15,10 +16,11 @@ import { IAlpacaManagementWebPartProps } from './IAlpacaManagementWebPartProps';
 export default class AlpacaManagementWebPart extends BaseClientSideWebPart<IAlpacaManagementWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<IAlpacaManagementProps > = React.createElement(
+    const element: React.ReactElement<IAlpacaManagementProps> = React.createElement(
       AlpacaManagement,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        context: this.context
       }
     );
 
@@ -42,6 +44,9 @@ export default class AlpacaManagementWebPart extends BaseClientSideWebPart<IAlpa
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneTextField('groupName', {
+                  label: 'Group Name'
                 })
               ]
             }
