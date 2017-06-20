@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "name": "alpaca-management-webpart-client-side-solution",
+    "id": "f183dd50-cd65-45a1-8729-06f366e9b345",
+    "version": "1.0.0.0"
+  },
+  "paths": {
+    "zippedPackage": "solution/alpaca-management-webpart.sppkg"
+  }
+}

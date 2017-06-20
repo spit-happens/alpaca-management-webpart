@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "entry": "./lib/webparts/alpacaManagement/AlpacaManagementWebPart.js",
+      "manifest": "./src/webparts/alpacaManagement/AlpacaManagementWebPart.manifest.json",
+      "outputPath": "./dist/alpaca-management.bundle.js"
+    }
+  ],
+  "externals": {},
+  "localizedResources": {
+    "alpacaManagementStrings": "webparts/alpacaManagement/loc/{locale}.js"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "version": "1.1.1",
+    "libraryName": "alpaca-management-webpart",
+    "libraryId": "f183dd50-cd65-45a1-8729-06f366e9b345",
+    "environment": "spo"
+  }
+}
