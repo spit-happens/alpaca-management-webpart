@@ -51,6 +51,9 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         filteredAlpaca.forEach(alpaca => {
             alpaca.left = _.random(0, 700 - 25);
             alpaca.top = _.random(0, 500);
+            alpaca.scaleX = _.random(1, 2) == 2 ? -1 : 1;
+            alpaca.hueRotation = 0//_.random(0, 360);
+            alpaca.saturate = _.random(0.5, 2, true);
         });
 
         let mappedAlpaca = _.zipObject(_.map(filteredAlpaca, "id"), filteredAlpaca);
@@ -115,7 +118,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         const currentAlpaca = this.state.alpaca[key];
 
                         return (
-                            <Alpaca key={`${key}`} id={`${key}`} alpaca={currentAlpaca} left={currentAlpaca.left} top={currentAlpaca.top} />
+                            <Alpaca key={`${key}`} id={`${key}`} alpaca={currentAlpaca} left={currentAlpaca.left} top={currentAlpaca.top} scaleX={currentAlpaca.scaleX} hueRotation={currentAlpaca.hueRotation} saturate={currentAlpaca.saturate}/>
                         );
                     })
                 }

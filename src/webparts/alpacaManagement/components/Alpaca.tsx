@@ -42,7 +42,7 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
     }
 
     public render() {
-        const { hideSourceOnDrag, left, top, connectDragSource, isDragging, children } = this.props;
+        const { hideSourceOnDrag, left, top, scaleX, hueRotation, saturate, connectDragSource, isDragging, children } = this.props;
         let { isCalloutVisible } = this.state;
         if (isDragging && hideSourceOnDrag) {
             return null;
@@ -51,7 +51,7 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
         return connectDragSource(
             <div className={styles.alpaca}
                 title={this.props.alpaca.displayName}
-                style={{ left, top }}
+                style={{ left, top, transform: `scaleX(${scaleX})`, filter: `hue-rotate(${hueRotation}deg) saturate(${saturate})` }}
                 onClick={this._onShowMenuClicked}
                 ref={(alpaca) => this._targetAlpacaElement = alpaca}>
                 {children}

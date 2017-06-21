@@ -4,6 +4,9 @@ export interface IAlpacaProps {
     id: any;
     left: number;
     top: number;
+    scaleX: number;
+    hueRotation: number;
+    saturate: number;
     hideSourceOnDrag?: boolean;
     alpaca: any;
 }
