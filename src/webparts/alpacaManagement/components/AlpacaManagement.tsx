@@ -14,6 +14,10 @@ import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { Client as GraphClient } from '@microsoft/microsoft-graph-client';
 import * as URI from 'urijs';
 import * as _ from 'lodash';
+import * as localforage from 'localforage';
+
+const GoodAlpacaStorageKey = "alpaca-management-good-alpaca";
+const BadAlpacaStorageKey = "alpaca-management-bad-alpaca";
 
 export default class AlpacaManagement extends React.Component<IAlpacaManagementProps, IAlpacaManagementState> {
     private _targetBadAlpacaCalloutElement: any;
@@ -36,6 +40,13 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
 
     public async componentDidMount() {
         this.getAlpacas();
+    }
+
+    @autobind
+    public async refreshAlpacas() {
+        await localforage.removeItem(GoodAlpacaStorageKey);
+        await localforage.removeItem(BadAlpacaStorageKey);
+        await this.getAlpacas();
     }
 
     @autobind
@@ -68,44 +79,58 @@ client_id=${clientId}\
             }
         });
 
+        let meResult, usersResult;
         try {
-            let meResult = await client.api('/me')
+            meResult = await client.api('/me')
                 .get();
 
             Log.info("Alpaca Management", `UserInfo: ${meResult}`);
 
-            let usersResult = await client.api('/users')
+            usersResult = await client.api('/users')
                 .top(500)
                 .get();
 
             Log.info("Alpaca Management", `${usersResult.length} users retrieved.`);
-
-            //Filter users
-            let filteredUsers = _.remove(usersResult.value, (a: any) => {
-
-                if (!a.displayName.match(/.*mailbox.*/i)) {
-                    return true;
-                }
-            });
-
-            let mappedUsers = _.zipObject(_.map(filteredUsers, "id"), filteredUsers);
-
-            this.setState({
-                loading: false,
-                me: meResult.value,
-                users: mappedUsers,
-                goodAlpaca: [],
-                badAlpaca: []
-            });
         }
         catch (ex) {
             //An error occurred, redirect to the auth endpoint.
             window.location.href = authEndpointUri;
         }
+
+        //Filter users
+        let filteredUsers = _.remove(usersResult.value, (a: any) => {
+            if (!a.displayName.match(/.*mailbox.*/i)) {
+                return true;
+            }
+        });
+
+        let mappedUsers = _.zipObject(_.map(filteredUsers, "id"), filteredUsers);
+
+        let storedGoodAlpaca = await localforage.getItem(GoodAlpacaStorageKey);
+        let storedBadAlpaca = await localforage.getItem(BadAlpacaStorageKey);
+
+        let goodAlpaca = {}, badAlpaca = {};
+        Object.keys(mappedUsers).map((userId) => {
+            if (storedGoodAlpaca && storedGoodAlpaca[userId]) {
+                goodAlpaca[userId] = mappedUsers[userId];
+                _.unset(mappedUsers, userId);
+            } else if (storedBadAlpaca && storedBadAlpaca[userId]) {
+                badAlpaca[userId] = mappedUsers[userId];
+                _.unset(mappedUsers, userId);
+            }
+        });
+
+        this.setState({
+            loading: false,
+            me: meResult.value,
+            users: mappedUsers,
+            goodAlpaca: goodAlpaca,
+            badAlpaca: badAlpaca
+        });
     }
 
     @autobind
-    private alpacaDropped(id: string, penTitle: string): void {
+    private async alpacaDropped(id: string, penTitle: string): Promise<void> {
         let wanderingAlpaca = this.state.users[id];
         if (!wanderingAlpaca) {
             return;
@@ -116,12 +141,14 @@ client_id=${clientId}\
         switch (penTitle) {
             case "Good Alpaca":
                 this.state.goodAlpaca[id] = wanderingAlpaca;
+                await localforage.setItem(GoodAlpacaStorageKey, this.state.goodAlpaca);
                 this.setState({
                     goodAlpaca: this.state.goodAlpaca
                 });
                 break;
             case "Bad Alpaca":
                 this.state.badAlpaca[id] = wanderingAlpaca;
+                await localforage.setItem(BadAlpacaStorageKey, this.state.badAlpaca);
                 this.setState({
                     badAlpaca: this.state.badAlpaca
                 });
@@ -188,7 +215,7 @@ client_id=${clientId}\
                     <div className="ms-Grid-col ms-u-sm4">
                         <PrimaryButton
                             text='Refresh Alpacas'
-                            onClick={this.getAlpacas}
+                            onClick={this.refreshAlpacas}
                             iconProps={{ iconName: 'Refresh' }}
                             style={{ float: "right" }}
                         />

@@ -6,7 +6,6 @@ import { IAlpacaFarmState } from './IAlpacaFarmState';
 import { DropTarget, DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Alpaca from './Alpaca';
-import AlpacaPen from './AlpacaPen';
 import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
 import * as _ from 'lodash';
 
