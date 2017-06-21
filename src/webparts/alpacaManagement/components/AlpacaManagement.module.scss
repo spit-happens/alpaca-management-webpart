@@ -24,6 +24,7 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
     position: relative;
     background: url('../assets/grass03.png');
+}
 
   .alpaca {
     position: absolute;
@@ -33,7 +34,6 @@
     background-size: 25px 25px;
     cursor: 'move';
   }
-}
 
 .alpacaCallout {
     max-width: 300px;
@@ -54,4 +54,25 @@
 
 div[class*="beakCurtain_"] {
   background-color: transparent !important;
+}
+
+.alpacaCountCallout {
+  width: 300px;
+}
+
+.alpacaCountCalloutHeader {
+  margin: 0 auto;
+}
+
+.alpacaCountCalloutTitle {
+  text-align: center;
+  font-size: medium;
+  margin: 5px;
+}
+
+.alpacaCountCalloutBody {
+    width: 95%;
+    height: 150px;
+    border: 1px solid black;
+    margin: 0 auto;
 }

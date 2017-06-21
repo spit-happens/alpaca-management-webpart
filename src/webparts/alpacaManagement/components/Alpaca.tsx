@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styles from './AlpacaManagement.module.scss';
-import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { IAlpacaProps } from './IAlpacaProps';
 import { Callout, DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
 import { DragSource } from 'react-dnd';
@@ -27,22 +26,20 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
         };
     };
 
-    @autobind
-    private _onShowMenuClicked() {
-        this.setState({
-            isCalloutVisible: !this.state.isCalloutVisible
-        });
-    }
-
-    @autobind
-    private _onCalloutDismiss() {
-        this.setState({
-            isCalloutVisible: false
-        });
-    }
-
     public render() {
-        const { hideSourceOnDrag, left, top, scaleX, hueRotation, saturate, connectDragSource, isDragging, children } = this.props;
+        const {
+            alpaca,
+            hideSourceOnDrag,
+            left,
+            top,
+            scaleX,
+            hueRotation,
+            saturate,
+            connectDragSource,
+            isDragging,
+            children
+        } = this.props;
+
         let { isCalloutVisible } = this.state;
         if (isDragging && hideSourceOnDrag) {
             return null;
@@ -50,10 +47,10 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
 
         return connectDragSource(
             <div className={styles.alpaca}
-                title={this.props.alpaca.displayName}
+                title={alpaca.displayName}
                 style={{ left, top, transform: `scaleX(${scaleX})`, filter: `hue-rotate(${hueRotation}deg) saturate(${saturate})` }}
-                onClick={this._onShowMenuClicked}
-                ref={(alpaca) => this._targetAlpacaElement = alpaca}>
+                onClick={() => this.setState({ isCalloutVisible: !this.state.isCalloutVisible })}
+                ref={(e) => this._targetAlpacaElement = e}>
                 {children}
                 {isCalloutVisible ? (
                     <Callout
@@ -62,18 +59,18 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
                         targetElement={this._targetAlpacaElement}
                         isBeakVisible={true}
                         beakWidth={10}
-                        onDismiss={this._onCalloutDismiss}
+                        onDismiss={() => this.setState({ isCalloutVisible: false })}
                         directionalHint={DirectionalHint.rightCenter}
                     >
                         <div className={styles.alpacaCalloutHeader}>
                             <p className={styles.alpacaCalloutTitle}>
-                                {this.props.alpaca.displayName}
+                                {alpaca.displayName}
                             </p>
                         </div>
                         <div className={styles.alpacaCalloutBody}>
                             <div>
                                 <p>
-                                    {this.props.alpaca.mail}
+                                    {alpaca.mail}
                                 </p>
                             </div>
                         </div>

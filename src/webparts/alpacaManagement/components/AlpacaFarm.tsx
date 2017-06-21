@@ -52,7 +52,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
             alpaca.left = _.random(0, 700 - 25);
             alpaca.top = _.random(0, 500);
             alpaca.scaleX = _.random(1, 2) == 2 ? -1 : 1;
-            alpaca.hueRotation = 0//_.random(0, 360);
+            alpaca.hueRotation = 0; //_.random(0, 360);
             alpaca.saturate = _.random(0.5, 2, true);
         });
 
@@ -122,7 +122,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         );
                     })
                 }
-                <AlpacaPen title={"Good Alpaca"} left={100} top={525} farm={this} />
+                <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" farm={this} />
                 <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" farm={this} />
             </div>
         );

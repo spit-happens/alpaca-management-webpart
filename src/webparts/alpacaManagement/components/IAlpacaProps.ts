@@ -1,5 +1,5 @@
 export interface IAlpacaProps {
-    connectDragSource?: any;//function
+    connectDragSource?: (any) => any;
     isDragging?: boolean;
     id: any;
     left: number;

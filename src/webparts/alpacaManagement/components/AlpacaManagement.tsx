@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as update from 'react/lib/update';
+import Alpaca from './Alpaca';
 import AlpacaFarm from './AlpacaFarm';
 import styles from './AlpacaManagement.module.scss';
 import { IAlpacaManagementProps } from './IAlpacaManagementProps';
@@ -8,11 +9,15 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import { Log } from '@microsoft/sp-core-library';
 import { PrimaryButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { Callout, DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { Client as GraphClient } from '@microsoft/microsoft-graph-client';
 import * as URI from 'urijs';
 
 export default class AlpacaManagement extends React.Component<IAlpacaManagementProps, IAlpacaManagementState> {
+    private _targetBadAlpacaCalloutElement: any;
+    private _targetGoodAlpacaCalloutElement: any;
+
     public constructor(props) {
         super(props);
 
@@ -21,7 +26,9 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
             me: [],
             users: [],
             goodAlpaca: [],
-            badAlpaca: []
+            badAlpaca: [],
+            isGoodAlpacaCalloutVisible: false,
+            isBadAlpacaCalloutVisible: false
         };
         Log.info("Alpaca Management", "Initialized");
     }
@@ -89,14 +96,14 @@ client_id=${clientId}\
     @autobind
     public addGoodAlpaca(alpaca) {
         this.setState(update(this.state, {
-            goodAlpaca: {$push: [alpaca]}
+            goodAlpaca: { $push: [alpaca] }
         }));
     }
 
     @autobind
     public addBadAlpaca(alpaca) {
         this.setState(update(this.state, {
-            badAlpaca: {$push: [alpaca]}
+            badAlpaca: { $push: [alpaca] }
         }));
     }
 
@@ -106,6 +113,9 @@ client_id=${clientId}\
                 <Spinner size={SpinnerSize.large} label='Loading Alpacas...' />
             );
         }
+
+        const { isBadAlpacaCalloutVisible, isGoodAlpacaCalloutVisible, badAlpaca, goodAlpaca } = this.state;
+
         return (
             <div className={styles.alpacaManagement}>
                 <div className={`ms-Grid-row ms-bgColor-themeDark ms-fontColor-white ${styles.headerRow}`}>
@@ -115,10 +125,10 @@ client_id=${clientId}\
                 </div>
                 <AlpacaFarm alpaca={this.state.users} goodAlpacaAdded={this.addGoodAlpaca} badAlpacaAdded={this.addBadAlpaca} />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
-                    <div className="ms-Grid-col ms-u-sm4">
+                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState({ isGoodAlpacaCalloutVisible: !this.state.isGoodAlpacaCalloutVisible })}>
                         # of Good Alpaca: {this.state.goodAlpaca.length}
                     </div>
-                    <div className="ms-Grid-col ms-u-sm4">
+                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetBadAlpacaCalloutElement = e} onClick={() => this.setState({ isBadAlpacaCalloutVisible: !this.state.isBadAlpacaCalloutVisible })}>
                         # of Bad Alpaca: {this.state.badAlpaca.length}
                     </div>
                     <div className="ms-Grid-col ms-u-sm4">
@@ -130,6 +140,56 @@ client_id=${clientId}\
                         />
                     </div>
                 </div>
+                {isGoodAlpacaCalloutVisible ? (
+                    <Callout
+                        className={styles.alpacaCountCallout}
+                        targetElement={this._targetGoodAlpacaCalloutElement}
+                        isBeakVisible={true}
+                        beakWidth={10}
+                        onDismiss={() => this.setState({ isGoodAlpacaCalloutVisible: false })}
+                        directionalHint={DirectionalHint.topAutoEdge}
+                    >
+                        <div className={styles.alpacaCountCalloutHeader}>
+                            <p className={styles.alpacaCountCalloutTitle}>
+                                Good Alpaca
+                            </p>
+                        </div>
+                        <div className={styles.alpacaCountCalloutBody}>
+                            {
+                                goodAlpaca.map((currentAlpaca) => {
+                                    return (
+                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
+                                    );
+                                })
+                            }
+                        </div>
+                    </Callout>
+                ) : (null)}
+                {isBadAlpacaCalloutVisible ? (
+                    <Callout
+                        className={styles.alpacaCountCallout}
+                        targetElement={this._targetBadAlpacaCalloutElement}
+                        isBeakVisible={true}
+                        beakWidth={10}
+                        onDismiss={() => this.setState({ isBadAlpacaCalloutVisible: false })}
+                        directionalHint={DirectionalHint.topAutoEdge}
+                    >
+                        <div className={styles.alpacaCountCalloutHeader}>
+                            <p className={styles.alpacaCountCalloutTitle}>
+                                Bad Alpaca
+                            </p>
+                        </div>
+                        <div className={styles.alpacaCountCalloutBody}>
+                            {
+                                badAlpaca.map((currentAlpaca) => {
+                                    return (
+                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
+                                    );
+                                })
+                            }
+                        </div>
+                    </Callout>
+                ) : (null)}
             </div>
         );
     }
