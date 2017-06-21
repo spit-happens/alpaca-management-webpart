@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as update from 'react/lib/update';
-import Alpaca from './Alpaca';
+import AlpacaPen from './AlpacaPen';
 import AlpacaFarm from './AlpacaFarm';
 import styles from './AlpacaManagement.module.scss';
 import { IAlpacaManagementProps } from './IAlpacaManagementProps';
@@ -13,6 +13,7 @@ import { Callout, DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
 import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { Client as GraphClient } from '@microsoft/microsoft-graph-client';
 import * as URI from 'urijs';
+import * as _ from 'lodash';
 
 export default class AlpacaManagement extends React.Component<IAlpacaManagementProps, IAlpacaManagementState> {
     private _targetBadAlpacaCalloutElement: any;
@@ -24,9 +25,9 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
         this.state = {
             loading: false,
             me: [],
-            users: [],
-            goodAlpaca: [],
-            badAlpaca: [],
+            users: {},
+            goodAlpaca: {},
+            badAlpaca: {},
             isGoodAlpacaCalloutVisible: false,
             isBadAlpacaCalloutVisible: false
         };
@@ -79,10 +80,20 @@ client_id=${clientId}\
 
             Log.info("Alpaca Management", `${usersResult.length} users retrieved.`);
 
+            //Filter users
+            let filteredUsers = _.remove(usersResult.value, (a: any) => {
+
+                if (!a.displayName.match(/.*mailbox.*/i)) {
+                    return true;
+                }
+            });
+
+            let mappedUsers = _.zipObject(_.map(filteredUsers, "id"), filteredUsers);
+
             this.setState({
                 loading: false,
                 me: meResult.value,
-                users: usersResult.value,
+                users: mappedUsers,
                 goodAlpaca: [],
                 badAlpaca: []
             });
@@ -94,17 +105,57 @@ client_id=${clientId}\
     }
 
     @autobind
-    public addGoodAlpaca(alpaca) {
-        this.setState(update(this.state, {
-            goodAlpaca: { $push: [alpaca] }
-        }));
+    private alpacaDropped(id: string, penTitle: string): void {
+        let wanderingAlpaca = this.state.users[id];
+        if (!wanderingAlpaca) {
+            return;
+        }
+
+        _.unset(this.state.users, id);
+
+        switch (penTitle) {
+            case "Good Alpaca":
+                this.state.goodAlpaca[id] = wanderingAlpaca;
+                this.setState({
+                    goodAlpaca: this.state.goodAlpaca
+                });
+                break;
+            case "Bad Alpaca":
+                this.state.badAlpaca[id] = wanderingAlpaca;
+                this.setState({
+                    badAlpaca: this.state.badAlpaca
+                });
+                break;
+        }
+
+        //TODO: increase perf of this using update combined with $merge etc...
+
+        this.setState({
+            users: this.state.users
+        });
     }
 
     @autobind
-    public addBadAlpaca(alpaca) {
-        this.setState(update(this.state, {
-            badAlpaca: { $push: [alpaca] }
-        }));
+    public putBackAlpaca(alpaca, penTitle) {
+        switch (penTitle) {
+            case "Good Alpaca":
+                _.unset(this.state.goodAlpaca, alpaca.id);
+                this.setState({
+                    goodAlpaca: this.state.goodAlpaca
+                });
+                break;
+            case "Bad Alpaca":
+                _.unset(this.state.badAlpaca, alpaca.id);
+                this.setState({
+                    badAlpaca: this.state.badAlpaca
+                });
+                break;
+        }
+
+        this.state.users[alpaca.id] = alpaca;
+        this.setState({
+            users: this.state.users
+        });
     }
 
     public render(): React.ReactElement<IAlpacaManagementProps> {
@@ -123,13 +174,16 @@ client_id=${clientId}\
                         <span className="ms-font-xl ms-fontColor-white">{escape(this.props.description)}</span>
                     </div>
                 </div>
-                <AlpacaFarm alpaca={this.state.users} goodAlpacaAdded={this.addGoodAlpaca} badAlpacaAdded={this.addBadAlpaca} />
+                <AlpacaFarm alpaca={this.state.users}>
+                    <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" alpacaDropped={this.alpacaDropped} />
+                    <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" alpacaDropped={this.alpacaDropped} />
+                </AlpacaFarm>
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState({ isGoodAlpacaCalloutVisible: !this.state.isGoodAlpacaCalloutVisible })}>
-                        # of Good Alpaca: {this.state.goodAlpaca.length}
+                        # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}
                     </div>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetBadAlpacaCalloutElement = e} onClick={() => this.setState({ isBadAlpacaCalloutVisible: !this.state.isBadAlpacaCalloutVisible })}>
-                        # of Bad Alpaca: {this.state.badAlpaca.length}
+                        # of Bad Alpaca: {Object.keys(this.state.badAlpaca).length}
                     </div>
                     <div className="ms-Grid-col ms-u-sm4">
                         <PrimaryButton
@@ -156,9 +210,10 @@ client_id=${clientId}\
                         </div>
                         <div className={styles.alpacaCountCalloutBody}>
                             {
-                                goodAlpaca.map((currentAlpaca) => {
+                                Object.keys(goodAlpaca).map(id => {
+                                    let currentAlpaca = goodAlpaca[id];
                                     return (
-                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
+                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} onClick={() => this.putBackAlpaca(currentAlpaca, "Good Alpaca")} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
                                     );
                                 })
                             }
@@ -181,9 +236,10 @@ client_id=${clientId}\
                         </div>
                         <div className={styles.alpacaCountCalloutBody}>
                             {
-                                badAlpaca.map((currentAlpaca) => {
+                                Object.keys(badAlpaca).map(id => {
+                                    let currentAlpaca = badAlpaca[id];
                                     return (
-                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
+                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} onClick={() => this.putBackAlpaca(currentAlpaca, "Bad Alpaca")} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
                                     );
                                 })
                             }

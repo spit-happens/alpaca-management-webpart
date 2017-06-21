@@ -7,7 +7,7 @@ export interface IAlpacaPenProps {
     children?: any;
     left: number;
     top: number;
-    farm: any;
+    alpacaDropped: (id: string, penTitle: string) => void;
     backgroundColor?: string;
     dropColor?: string;
 }

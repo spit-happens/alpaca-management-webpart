@@ -42,22 +42,16 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
     }
 
     public async componentDidMount() {
-        let filteredAlpaca = _.remove(this.props.alpaca, (a: any) => {
 
-            if (!a.displayName.match(/.*mailbox.*/i)) {
-                return true;
-            }
-        });
+        Object.keys(this.props.alpaca).forEach(id => {
+            let alpaca = this.props.alpaca[id];
 
-        filteredAlpaca.forEach(alpaca => {
             alpaca.left = _.random(0, 700 - 25);
             alpaca.top = _.random(0, 500);
             alpaca.scaleX = _.random(1, 2) == 2 ? -1 : 1;
             alpaca.hueRotation = 0; //_.random(0, 360);
             alpaca.saturate = _.random(0.5, 2, true);
         });
-
-        let mappedAlpaca = _.zipObject(_.map(filteredAlpaca, "id"), filteredAlpaca);
 
         let randomSpaceLettuce = [];
 
@@ -68,34 +62,10 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                 saturate: _.random(0.5, 2, true)
             });
         }
-        console.log(randomSpaceLettuce);
+
         this.setState({
-            alpaca: mappedAlpaca,
+            alpaca: this.props.alpaca,
             spaceLettuce: randomSpaceLettuce
-        });
-    }
-
-    private alpacaDropped(id, targetTitle) {
-        let wanderingAlpaca = this.state.alpaca[id];
-        if (!wanderingAlpaca) {
-            return;
-        }
-
-        _.unset(this.state.alpaca, id);
-
-        switch (targetTitle) {
-            case "Good Alpaca":
-                this.props.goodAlpacaAdded(wanderingAlpaca);
-                break;
-            case "Bad Alpaca":
-                this.props.badAlpacaAdded(wanderingAlpaca);
-                break;
-        }
-
-        //TODO: increase perf of this using update combined with $push etc...
-
-        this.setState({
-            alpaca: this.state.alpaca
         });
     }
 
@@ -143,8 +113,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         );
                     })
                 }
-                <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" farm={this} />
-                <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" farm={this} />
+                {this.props.children}
             </div>
         );
     }
