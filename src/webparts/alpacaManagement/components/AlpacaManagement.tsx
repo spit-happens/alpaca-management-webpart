@@ -133,16 +133,14 @@ client_id=${clientId}\
     private async alpacaDropped(id: string, penTitle: string): Promise<void> {
         const wanderingAlpaca = this.state.users[id];
         if (!wanderingAlpaca) {
-            console.log("nope!!");
-            this.setState({
-                users: this.state.users
-            });
             return;
         }
 
-        _.unset(this.state.users, id);
-        this.setState({
-            users: this.state.users
+        this.setState((prevState, props) => {
+            _.unset(this.state.users, id);
+            return {
+                users: this.state.users
+            }
         });
 
         switch (penTitle) {

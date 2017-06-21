@@ -49,7 +49,8 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
                 title={alpaca.displayName}
                 style={{ left, top, transform: `scaleX(${scaleX})`, filter: `hue-rotate(${hueRotation}deg) saturate(${saturate})` }}
                 onClick={() => this.setState((prevState, props) => ({ isCalloutVisible: !prevState.isCalloutVisible}))}
-                ref={(e) => this.state.targetAlpacaElement = e}>
+                ref={(e) => this.state.targetAlpacaElement = e}
+                >
                 {children}
                 {isCalloutVisible ? (
                     <Callout
