@@ -7,17 +7,24 @@ import { Log } from '@microsoft/sp-core-library';
 import { DropTarget, DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Alpaca from './Alpaca';
+import AlpacaPen from './AlpacaPen';
 import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
 import * as _ from 'lodash';
 
 const alpacaTarget = {
     drop(props, monitor, component) {
         const item = monitor.getItem();
-        const delta = monitor.getDifferenceFromInitialOffset();
-        const left = Math.round(item.left + delta.x);
-        const top = Math.round(item.top + delta.y);
+        let left = item.left, top = item.top;
+        const hasDroppedOnChild = monitor.didDrop();
 
-        component.moveAlpaca(item.id, left, top);
+        if (hasDroppedOnChild) {
+        } else {
+            const delta = monitor.getDifferenceFromInitialOffset();
+            left = Math.round(item.left + delta.x);
+            top = Math.round(item.top + delta.y);
+        }
+
+        component.moveAlpaca(item.id, left, top, hasDroppedOnChild);
     },
 };
 
@@ -30,12 +37,13 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         super(props);
 
         this.state = {
-            alpaca: []
+            alpaca: [],
+            goodAlpacas: [],
+            badAlpacas: []
         }
     }
 
     public async componentDidMount() {
-        console.log(this.props.alpaca);
         let filteredAlpaca = _.remove(this.props.alpaca, (a: any) => {
 
             if (!a.displayName.match(/.*mailbox.*/i)) {
@@ -44,7 +52,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         });
 
         filteredAlpaca.forEach(alpaca => {
-            alpaca.left = _.random(0, 700);
+            alpaca.left = _.random(0, 700 - 25);
             alpaca.top = _.random(0, 500);
         });
 
@@ -55,8 +63,36 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         });
     }
 
-    moveAlpaca(id, left, top) {
-        console.log(id + " " + left + " " + top);
+    alpacaDropped(id, targetTitle) {
+        let wanderingAlpaca = this.state.alpaca[id];
+        if (!wanderingAlpaca) {
+            return;
+        }
+
+        _.unset(this.state.alpaca, id);
+
+        switch (targetTitle) {
+            case "Good Alpacas":
+                this.state.goodAlpacas.push(wanderingAlpaca);
+                break;
+            case "Bad Alpacas":
+                this.state.badAlpacas.push(wanderingAlpaca);
+                break;
+        }
+
+        //TODO: increase perf of this using update combined with $push etc...
+        
+        this.setState({
+            alpaca: this.state.alpaca,
+            goodAlpacas: this.state.goodAlpacas,
+            badAlpacas: this.state.badAlpacas
+        });
+    }
+
+    moveAlpaca(id, left, top, hasDroppedOnChild) {
+        if (!this.state.alpaca[id]) {
+            return;
+        }
         this.setState(update(this.state, {
             alpaca: {
                 [id]: {
@@ -88,6 +124,8 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         );
                     })
                 }
+                <AlpacaPen title={"Good Alpacas"} left={100} top={525} farm={this} />
+                <AlpacaPen title={"Bad Alpacas"} left={370} top={580} dropColor="red" farm={this} />
             </div>
         );
     }

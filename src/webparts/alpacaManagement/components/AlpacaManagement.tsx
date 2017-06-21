@@ -38,13 +38,14 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
 
         let currentUri = URI();
         let currentHashParts = URI(currentUri.hash().replace('#', '?'));
-
-        if (!currentHashParts.hasQuery("access_token")) {
-            window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?\
+        let authEndpointUri = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?\
 client_id=${clientId}\
 &response_type=token\
 &redirect_uri=${currentUri.search('').fragment('').href()}\
 &scope=${desiredScope.join('%20')}`;
+
+        if (!currentHashParts.hasQuery("access_token")) {
+            window.location.href = authEndpointUri;
         }
 
         //TODO: Store the access token and other info in state.
@@ -56,22 +57,29 @@ client_id=${clientId}\
             }
         });
 
-        let meResult = await client.api('/me')
-            .get();
-        
-        Log.info("Alpaca Management", `UserInfo: ${meResult}`);
+        try {
+            let meResult = await client.api('/me')
+                .get();
 
-        let usersResult = await client.api('/users')
-            .top(500)
-            .get();
+            Log.info("Alpaca Management", `UserInfo: ${meResult}`);
 
-        Log.info("Alpaca Management", `${usersResult.length} users retrieved.`);
+            let usersResult = await client.api('/users')
+                .top(500)
+                .get();
 
-        this.setState({
-            loading: false,
-            me: meResult.value,
-            users: usersResult.value
-        });
+            Log.info("Alpaca Management", `${usersResult.length} users retrieved.`);
+
+            this.setState({
+                loading: false,
+                me: meResult.value,
+                users: usersResult.value
+            });
+        }
+        catch (ex) {
+          //An error occurred, redirect to the auth endpoint.
+          window.location.href = authEndpointUri;
+        }
+
     }
 
     public render(): React.ReactElement<IAlpacaManagementProps> {
