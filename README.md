@@ -2,7 +2,9 @@
 
 Using SPFx, Office UI Fabric React, Graph SDK and various other bits, this SPFx webpart connects to the Microsoft Graph for an organization and pulls all users. It then represents each one as an Alpaca that can be dragged and dropped into one of the Alpaca Pens for hours of fun and enjoyment.
 
-
+<p align="center">
+  <img src="https://github.com/spithappens/alpaca-management-webpart/blob/master/AlpacaManagementScreenshot.png?raw=true" width="1200">
+</p>
 
 ### Building the code
 
