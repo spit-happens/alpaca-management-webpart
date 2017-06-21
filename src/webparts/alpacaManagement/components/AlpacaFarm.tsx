@@ -36,9 +36,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         super(props);
 
         this.state = {
-            alpaca: [],
-            goodAlpacas: [],
-            badAlpacas: []
+            alpaca: []
         };
     }
 
@@ -72,19 +70,17 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
 
         switch (targetTitle) {
             case "Good Alpacas":
-                this.state.goodAlpacas.push(wanderingAlpaca);
+                this.props.goodAlpacaAdded(wanderingAlpaca);
                 break;
             case "Bad Alpacas":
-                this.state.badAlpacas.push(wanderingAlpaca);
+                this.props.badAlpacaAdded(wanderingAlpaca);
                 break;
         }
 
         //TODO: increase perf of this using update combined with $push etc...
 
         this.setState({
-            alpaca: this.state.alpaca,
-            goodAlpacas: this.state.goodAlpacas,
-            badAlpacas: this.state.badAlpacas
+            alpaca: this.state.alpaca
         });
     }
 

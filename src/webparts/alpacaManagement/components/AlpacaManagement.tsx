@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as update from 'react/lib/update';
 import AlpacaFarm from './AlpacaFarm';
 import styles from './AlpacaManagement.module.scss';
 import { IAlpacaManagementProps } from './IAlpacaManagementProps';
@@ -7,6 +8,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import { Log } from '@microsoft/sp-core-library';
 import { PrimaryButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { Client as GraphClient } from '@microsoft/microsoft-graph-client';
 import * as URI from 'urijs';
 
@@ -17,10 +19,10 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
         this.state = {
             loading: false,
             me: [],
-            users: []
+            users: [],
+            goodAlpaca: [],
+            badAlpaca: []
         };
-
-        this.getAlpacas = this.getAlpacas.bind(this);
         Log.info("Alpaca Management", "Initialized");
     }
 
@@ -28,6 +30,7 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
         this.getAlpacas();
     }
 
+    @autobind
     public async getAlpacas() {
         this.setState({
             loading: true
@@ -72,14 +75,29 @@ client_id=${clientId}\
             this.setState({
                 loading: false,
                 me: meResult.value,
-                users: usersResult.value
+                users: usersResult.value,
+                goodAlpaca: [],
+                badAlpaca: []
             });
         }
         catch (ex) {
-          //An error occurred, redirect to the auth endpoint.
-          window.location.href = authEndpointUri;
+            //An error occurred, redirect to the auth endpoint.
+            window.location.href = authEndpointUri;
         }
+    }
 
+    @autobind
+    public addGoodAlpaca(alpaca) {
+        this.setState(update(this.state, {
+            goodAlpaca: {$push: [alpaca]}
+        }));
+    }
+
+    @autobind
+    public addBadAlpaca(alpaca) {
+        this.setState(update(this.state, {
+            badAlpaca: {$push: [alpaca]}
+        }));
     }
 
     public render(): React.ReactElement<IAlpacaManagementProps> {
@@ -95,9 +113,13 @@ client_id=${clientId}\
                         <span className="ms-font-xl ms-fontColor-white">{escape(this.props.description)}</span>
                     </div>
                 </div>
-                <AlpacaFarm alpaca={this.state.users} />
+                <AlpacaFarm alpaca={this.state.users} goodAlpacaAdded={this.addGoodAlpaca} badAlpacaAdded={this.addBadAlpaca} />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
-                    <div className="ms-Grid-col ms-u-sm8">
+                    <div className="ms-Grid-col ms-u-sm4">
+                        # of Good Alpaca: {this.state.goodAlpaca.length}
+                    </div>
+                    <div className="ms-Grid-col ms-u-sm4">
+                        # of Bad Alpaca: {this.state.badAlpaca.length}
                     </div>
                     <div className="ms-Grid-col ms-u-sm4">
                         <PrimaryButton
