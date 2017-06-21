@@ -57,6 +57,7 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
                 {children}
                 {isCalloutVisible ? (
                     <Callout
+                        backgroundColor={"rgba(255, 255, 255, 0.8)"}
                         className={styles.alpacaCallout}
                         targetElement={this._targetAlpacaElement}
                         isBeakVisible={true}
