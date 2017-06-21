@@ -131,12 +131,19 @@ client_id=${clientId}\
 
     @autobind
     private async alpacaDropped(id: string, penTitle: string): Promise<void> {
-        let wanderingAlpaca = this.state.users[id];
+        const wanderingAlpaca = this.state.users[id];
         if (!wanderingAlpaca) {
+            console.log("nope!!");
+            this.setState({
+                users: this.state.users
+            });
             return;
         }
 
         _.unset(this.state.users, id);
+        this.setState({
+            users: this.state.users
+        });
 
         switch (penTitle) {
             case "Good Alpaca":
@@ -153,13 +160,9 @@ client_id=${clientId}\
                     badAlpaca: this.state.badAlpaca
                 });
                 break;
+            default:
+                throw Error("Unexpected penTitle: " + penTitle);
         }
-
-        //TODO: increase perf of this using update combined with $merge etc...
-
-        this.setState({
-            users: this.state.users
-        });
     }
 
     @autobind
@@ -206,10 +209,10 @@ client_id=${clientId}\
                     <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" alpacaDropped={this.alpacaDropped} />
                 </AlpacaFarm>
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
-                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState({ isGoodAlpacaCalloutVisible: !this.state.isGoodAlpacaCalloutVisible })}>
+                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}
                     </div>
-                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetBadAlpacaCalloutElement = e} onClick={() => this.setState({ isBadAlpacaCalloutVisible: !this.state.isBadAlpacaCalloutVisible })}>
+                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetBadAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isBadAlpacaCalloutVisible: !prevState.isBadAlpacaCalloutVisible }))}>
                         # of Bad Alpaca: {Object.keys(this.state.badAlpaca).length}
                     </div>
                     <div className="ms-Grid-col ms-u-sm4">
