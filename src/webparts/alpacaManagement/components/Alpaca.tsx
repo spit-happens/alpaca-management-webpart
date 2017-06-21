@@ -22,7 +22,11 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
         this.state = {
             isCalloutVisible: false
         };
+    };
 
+    public static defaultProps: Partial<IAlpacaProps> = {
+        left: 0,
+        top: 0
     };
 
     public render() {
@@ -48,9 +52,9 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
             <div className={styles.alpaca}
                 title={alpaca.displayName}
                 style={{ left, top, transform: `scaleX(${scaleX})`, filter: `hue-rotate(${hueRotation}deg) saturate(${saturate})` }}
-                onClick={() => this.setState((prevState, props) => ({ isCalloutVisible: !prevState.isCalloutVisible}))}
+                onClick={() => this.setState((prevState, props) => ({ isCalloutVisible: !prevState.isCalloutVisible }))}
                 ref={(e) => this.state.targetAlpacaElement = e}
-                >
+            >
                 {children}
                 {isCalloutVisible ? (
                     <Callout
@@ -59,7 +63,7 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
                         targetElement={this.state.targetAlpacaElement}
                         isBeakVisible={true}
                         beakWidth={10}
-                        onDismiss={() => this.setState({isCalloutVisible: false})}
+                        onDismiss={() => this.setState({ isCalloutVisible: false })}
                         directionalHint={DirectionalHint.rightCenter}
                     >
                         <div className={styles.alpacaCalloutHeader}>

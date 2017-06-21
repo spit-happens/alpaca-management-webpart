@@ -28,12 +28,6 @@ const penTarget = {
         component.setState({
             hasDropped: true
         });
-
-        setTimeout(() => {
-            component.setState({
-                hasDropped: false,
-            });
-        }, 3 * 1000);
     },
 };
 
@@ -58,6 +52,14 @@ export default class AlpacaPen extends React.Component<IAlpacaPenProps, any> {
 
         if (isOverCurrent || (isOver && greedy)) {
             backgroundColor = this.props.dropColor || 'darkgreen';
+        }
+
+        if (hasDropped === true) {
+            setTimeout(() => {
+                this.setState({
+                    hasDropped: false,
+                });
+            }, 3 * 1000);
         }
 
         return connectDropTarget(

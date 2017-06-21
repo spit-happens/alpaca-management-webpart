@@ -90,7 +90,7 @@ client_id=${clientId}\
                 .top(500)
                 .get();
 
-            Log.info("Alpaca Management", `${usersResult.length} users retrieved.`);
+            Log.info("Alpaca Management", `${usersResult.value.length} users retrieved.`);
         }
         catch (ex) {
             //An error occurred, redirect to the auth endpoint.
@@ -164,26 +164,37 @@ client_id=${clientId}\
     }
 
     @autobind
-    public putBackAlpaca(alpaca, penTitle) {
+    public async putBackAlpaca(alpaca, penTitle) {
         switch (penTitle) {
             case "Good Alpaca":
                 _.unset(this.state.goodAlpaca, alpaca.id);
+                await localforage.setItem(GoodAlpacaStorageKey, this.state.goodAlpaca);
                 this.setState({
                     goodAlpaca: this.state.goodAlpaca
                 });
                 break;
             case "Bad Alpaca":
                 _.unset(this.state.badAlpaca, alpaca.id);
+                await localforage.setItem(GoodAlpacaStorageKey, this.state.badAlpaca);
                 this.setState({
                     badAlpaca: this.state.badAlpaca
                 });
                 break;
         }
 
-        this.state.users[alpaca.id] = alpaca;
-        this.setState({
-            users: this.state.users
-        });
+        if (_.isUndefined(alpaca.left))
+            alpaca.left = 0;
+
+        if (_.isUndefined(alpaca.top))
+            alpaca.top = 0;
+
+        this.setState((prevState, props) => {
+            prevState.users[alpaca.id] = alpaca;
+            return {
+                users: prevState.users
+            }
+        }
+        );
     }
 
     public render(): React.ReactElement<IAlpacaManagementProps> {

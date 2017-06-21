@@ -15,14 +15,13 @@ const alpacaTarget = {
         let left = item.left, top = item.top;
         const hasDroppedOnChild = monitor.didDrop();
 
-        if (hasDroppedOnChild) {
-        } else {
+        if (!hasDroppedOnChild) {
             const delta = monitor.getDifferenceFromInitialOffset();
             left = Math.round(item.left + delta.x);
             top = Math.round(item.top + delta.y);
         }
 
-        component.moveAlpaca(item.id, left, top, hasDroppedOnChild);
+        component.moveAlpaca(item.id, left, top);
     },
 };
 
@@ -68,7 +67,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         });
     }
 
-    private moveAlpaca(id, left, top, hasDroppedOnChild) {
+    private moveAlpaca(id, left, top) {
         if (!this.state.alpaca[id]) {
             return;
         }
