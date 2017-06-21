@@ -3,7 +3,6 @@ import * as update from 'react/lib/update';
 import styles from './AlpacaManagement.module.scss';
 import { IAlpacaFarmProps } from './IAlpacaFarmProps';
 import { IAlpacaFarmState } from './IAlpacaFarmState';
-import { Log } from '@microsoft/sp-core-library';
 import { DropTarget, DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Alpaca from './Alpaca';
@@ -40,7 +39,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
             alpaca: [],
             goodAlpacas: [],
             badAlpacas: []
-        }
+        };
     }
 
     public async componentDidMount() {
@@ -63,7 +62,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         });
     }
 
-    alpacaDropped(id, targetTitle) {
+    private alpacaDropped(id, targetTitle) {
         let wanderingAlpaca = this.state.alpaca[id];
         if (!wanderingAlpaca) {
             return;
@@ -81,7 +80,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         }
 
         //TODO: increase perf of this using update combined with $push etc...
-        
+
         this.setState({
             alpaca: this.state.alpaca,
             goodAlpacas: this.state.goodAlpacas,
@@ -89,7 +88,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         });
     }
 
-    moveAlpaca(id, left, top, hasDroppedOnChild) {
+    private moveAlpaca(id, left, top, hasDroppedOnChild) {
         if (!this.state.alpaca[id]) {
             return;
         }
@@ -117,10 +116,10 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
             <div className={styles.alpacaFarm}>
                 {
                     Object.keys(alpaca).map((key) => {
-                        const alpaca = this.state.alpaca[key];
+                        const currentAlpaca = this.state.alpaca[key];
 
                         return (
-                            <Alpaca key={`${key}`} id={`${key}`} alpaca={alpaca} left={alpaca.left} top={alpaca.top} />
+                            <Alpaca key={`${key}`} id={`${key}`} alpaca={currentAlpaca} left={currentAlpaca.left} top={currentAlpaca.top} />
                         );
                     })
                 }

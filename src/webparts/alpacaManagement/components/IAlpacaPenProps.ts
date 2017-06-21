@@ -1,6 +1,6 @@
 export interface IAlpacaPenProps {
     connectDropTarget?: any; //function
-    isOver?: boolean
+    isOver?: boolean;
     isOverCurrent?: boolean;
     greedy?: boolean;
     title: string;

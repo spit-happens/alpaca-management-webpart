@@ -15,8 +15,6 @@
     margin: 5px auto 5px auto;
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
-
-
 }
 
 .alpacaFarm {
@@ -34,4 +32,16 @@
     background-size: 25px 25px;
     cursor: 'move';
   }
+}
+
+.alpacaCallout {
+    max-width: 300px;
+}
+
+.alpacaCalloutHeader {
+    padding: 18px 24px 12px;
+  }
+
+.alpacaCalloutTitle {
+  font-size: large;
 }

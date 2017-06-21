@@ -4,7 +4,7 @@ import { DropTarget } from 'react-dnd';
 import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
 
 const style = {
-    border: '1px solid rgba(0,0,0,0.2)',
+    border: '1px dashed rgba(0,0,0,0.6)',
     minWidth: '8rem',
     color: 'white',
     padding: '2rem',
@@ -13,7 +13,7 @@ const style = {
     textAlign: 'center',
     fontSize: '1rem',
     position: 'absolute'
-}
+};
 
 const penTarget = {
     drop(props, monitor, component) {
