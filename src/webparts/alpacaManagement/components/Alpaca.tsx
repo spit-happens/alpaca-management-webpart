@@ -70,9 +70,9 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
                                 {this.props.alpaca.displayName}
                             </p>
                         </div>
-                        <div className='ms-CalloutExample-inner'>
-                            <div className='ms-CalloutExample-content'>
-                                <p className='ms-CalloutExample-subText'>
+                        <div className={styles.alpacaCalloutBody}>
+                            <div>
+                                <p>
                                     {this.props.alpaca.mail}
                                 </p>
                             </div>
