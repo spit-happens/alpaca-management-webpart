@@ -69,10 +69,10 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         _.unset(this.state.alpaca, id);
 
         switch (targetTitle) {
-            case "Good Alpacas":
+            case "Good Alpaca":
                 this.props.goodAlpacaAdded(wanderingAlpaca);
                 break;
-            case "Bad Alpacas":
+            case "Bad Alpaca":
                 this.props.badAlpacaAdded(wanderingAlpaca);
                 break;
         }
@@ -119,8 +119,8 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         );
                     })
                 }
-                <AlpacaPen title={"Good Alpacas"} left={100} top={525} farm={this} />
-                <AlpacaPen title={"Bad Alpacas"} left={370} top={580} dropColor="red" farm={this} />
+                <AlpacaPen title={"Good Alpaca"} left={100} top={525} farm={this} />
+                <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" farm={this} />
             </div>
         );
     }
