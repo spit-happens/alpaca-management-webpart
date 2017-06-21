@@ -36,7 +36,8 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         super(props);
 
         this.state = {
-            alpaca: []
+            alpaca: {},
+            spaceLettuce: []
         };
     }
 
@@ -58,8 +59,19 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
 
         let mappedAlpaca = _.zipObject(_.map(filteredAlpaca, "id"), filteredAlpaca);
 
+        let randomSpaceLettuce = [];
+
+        for (let i = 0; i < _.random(4, 10); i++) {
+            randomSpaceLettuce.push({
+                left: _.random(0, 700 - 25),
+                top: _.random(0, 500),
+                saturate: _.random(0.5, 2, true)
+            });
+        }
+        console.log(randomSpaceLettuce);
         this.setState({
-            alpaca: mappedAlpaca
+            alpaca: mappedAlpaca,
+            spaceLettuce: randomSpaceLettuce
         });
     }
 
@@ -101,24 +113,33 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
     }
 
     public render(): React.ReactElement<IAlpacaFarmProps> {
-        const { alpaca } = this.state;
+        const { alpaca, spaceLettuce } = this.state;
         const { hideSourceOnDrag, connectDropTarget } = this.props;
 
-        if (!alpaca || alpaca.length == 0) {
+        if (!alpaca || Object.keys(alpaca).length == 0) {
             return (
                 <div className={styles.alpacaFarm}>
                 </div>
             );
         }
 
+        let spaceLettuceCount = 0;
         return connectDropTarget(
             <div className={styles.alpacaFarm}>
                 {
+                    spaceLettuce.map((currentSpaceLettuce) => {
+                        return (
+                            <div key={spaceLettuceCount++} className={styles.spaceLettuce} style={{ left: currentSpaceLettuce.left, top: currentSpaceLettuce.top }} />
+                        );
+                    })
+                }
+
+                {
                     Object.keys(alpaca).map((key) => {
-                        const currentAlpaca = this.state.alpaca[key];
+                        const currentAlpaca = alpaca[key];
 
                         return (
-                            <Alpaca key={`${key}`} id={`${key}`} alpaca={currentAlpaca} left={currentAlpaca.left} top={currentAlpaca.top} scaleX={currentAlpaca.scaleX} hueRotation={currentAlpaca.hueRotation} saturate={currentAlpaca.saturate}/>
+                            <Alpaca key={`${key}`} id={`${key}`} alpaca={currentAlpaca} left={currentAlpaca.left} top={currentAlpaca.top} scaleX={currentAlpaca.scaleX} hueRotation={currentAlpaca.hueRotation} saturate={currentAlpaca.saturate} />
                         );
                     })
                 }

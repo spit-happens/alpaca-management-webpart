@@ -1,3 +1,4 @@
 export interface IAlpacaFarmState {
-  alpaca: any;
+  alpaca?: object;
+  spaceLettuce?: Array<any>;
 }

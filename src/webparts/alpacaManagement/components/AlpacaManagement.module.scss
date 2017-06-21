@@ -35,6 +35,14 @@
     cursor: 'move';
   }
 
+  .spaceLettuce {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: url('../assets/space-lettuce.png');
+    background-size: 25px 25px;
+  }
+
 .alpacaCallout {
     max-width: 300px;
 }
