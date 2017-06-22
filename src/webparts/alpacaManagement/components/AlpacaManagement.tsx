@@ -139,7 +139,7 @@ client_id=${clientId}\
             _.unset(prevState.users, id);
             return {
                 users: prevState.users
-            }
+            };
         });
 
         switch (penTitle) {
@@ -191,7 +191,7 @@ client_id=${clientId}\
             prevState.users[alpaca.id] = alpaca;
             return {
                 users: prevState.users
-            }
+            };
         }
         );
     }
