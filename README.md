@@ -1,9 +1,9 @@
 ## alpaca-management-webpart
 
-Using SPFx, Office UI Fabric React, Graph SDK and various other bits, this SPFx webpart connects to the Microsoft Graph for an organization and pulls all users. It then represents each one as an Alpaca that can be dragged and dropped into one of the Alpaca Pens for hours of fun and enjoyment.
+Using SPFx, Office UI Fabric React, Graph SDK and various other bits, this SPFx webpart connects to the Microsoft Graph for an organization and pulls all users. It then represents each one as an Alpaca icon that can be dragged and dropped into one of the Alpaca Pens for hours of fun and enjoyment. State is stored locally within localStorage so that the Alpaca don't need to be moved as frequently.
 
 <p align="center">
-  <img src="https://github.com/spithappens/alpaca-management-webpart/blob/master/AlpacaManagementScreenshot-2.png?raw=true" width="1200">
+  <img src="https://github.com/spithappens/alpaca-management-webpart/blob/master/AlpacaManagementScreenshot-3.png?raw=true" width="1200">
 </p>
 
 ### Building the code
