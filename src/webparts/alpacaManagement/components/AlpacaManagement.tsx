@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as update from 'react/lib/update';
-import AlpacaPen from './AlpacaPen';
 import AlpacaFarm from './AlpacaFarm';
 import styles from './AlpacaManagement.module.scss';
 import { IAlpacaManagementProps } from './IAlpacaManagementProps';
@@ -137,9 +136,9 @@ client_id=${clientId}\
         }
 
         this.setState((prevState, props) => {
-            _.unset(this.state.users, id);
+            _.unset(prevState.users, id);
             return {
-                users: this.state.users
+                users: prevState.users
             }
         });
 
@@ -213,10 +212,7 @@ client_id=${clientId}\
                         <span className="ms-font-xl ms-fontColor-white">{escape(this.props.description)}</span>
                     </div>
                 </div>
-                <AlpacaFarm alpaca={this.state.users}>
-                    <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" alpacaDropped={this.alpacaDropped} />
-                    <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" alpacaDropped={this.alpacaDropped} />
-                </AlpacaFarm>
+                <AlpacaFarm alpaca={this.state.users} alpacaDropped={this.alpacaDropped} />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}

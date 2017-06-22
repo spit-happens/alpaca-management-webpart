@@ -23,7 +23,7 @@ const penTarget = {
         }
 
         const item = monitor.getItem();
-        props.alpacaDropped(item.id, props.title);
+        props.farm.alpacaDropped(item.id, props.title);
 
         component.setState({
             hasDropped: true

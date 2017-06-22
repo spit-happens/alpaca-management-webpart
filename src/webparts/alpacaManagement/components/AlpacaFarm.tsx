@@ -6,6 +6,7 @@ import { IAlpacaFarmState } from './IAlpacaFarmState';
 import { DropTarget, DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Alpaca from './Alpaca';
+import AlpacaPen from './AlpacaPen';
 import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
 import * as _ from 'lodash';
 
@@ -80,9 +81,16 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         }));
     }
 
+    private alpacaDropped(id, targetTitle) {
+        this.props.alpacaDropped(id, targetTitle);
+        this.setState({
+            alpaca: this.props.alpaca
+        });
+    }
+
     public render(): React.ReactElement<IAlpacaFarmProps> {
         const { alpaca, spaceLettuce } = this.state;
-        const { hideSourceOnDrag, connectDropTarget } = this.props;
+        const { hideSourceOnDrag, connectDropTarget, children } = this.props;
 
         if (!alpaca || Object.keys(alpaca).length == 0) {
             return (
@@ -111,7 +119,8 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         );
                     })
                 }
-                {this.props.children}
+                <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" farm={this} />
+                <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" farm={this} />
             </div>
         );
     }
