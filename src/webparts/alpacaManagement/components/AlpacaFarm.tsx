@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as update from 'react/lib/update';
 import styles from './AlpacaManagement.module.scss';
+import { autobind } from 'office-ui-fabric-react/lib/Utilities';
 import { IAlpacaFarmProps } from './IAlpacaFarmProps';
 import { IAlpacaFarmState } from './IAlpacaFarmState';
 import { DropTarget, DragDropContext } from 'react-dnd';
@@ -11,7 +12,7 @@ import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
 import * as _ from 'lodash';
 
 const alpacaTarget = {
-    drop(props, monitor, component) {
+    drop(props: IAlpacaFarmProps, monitor, component) {
         const item = monitor.getItem();
         let left = item.left, top = item.top;
         const hasDroppedOnChild = monitor.didDrop();
@@ -81,6 +82,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         }));
     }
 
+    @autobind
     private alpacaDropped(id, targetTitle) {
         this.props.alpacaDropped(id, targetTitle);
         this.setState({
@@ -119,8 +121,8 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
                         );
                     })
                 }
-                <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" farm={this} />
-                <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" farm={this} />
+                <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" alpacaDropped={this.alpacaDropped} />
+                <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" alpacaDropped={this.alpacaDropped} />
             </div>
         );
     }

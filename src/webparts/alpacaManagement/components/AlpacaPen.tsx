@@ -16,19 +16,19 @@ const style = {
 };
 
 const penTarget = {
-    drop(props, monitor, component) {
+    drop(props: IAlpacaPenProps, monitor, component) {
         const hasDroppedOnChild = monitor.didDrop();
         if (hasDroppedOnChild && !props.greedy) {
             return;
         }
 
         const item = monitor.getItem();
-        props.farm.alpacaDropped(item.id, props.title);
+        props.alpacaDropped(item.id, props.title);
 
         component.setState({
             hasDropped: true
         });
-    },
+    }
 };
 
 @DropTarget(AlpacaFarmAnimalTypes.Alpaca, penTarget, (connect, monitor) => ({
