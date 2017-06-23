@@ -32,6 +32,7 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
             users: {},
             goodAlpaca: {},
             badAlpaca: {},
+            spaceLettuce: [],
             isGoodAlpacaCalloutVisible: false,
             isBadAlpacaCalloutVisible: false
         };
@@ -40,6 +41,20 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
 
     public async componentDidMount() {
         this.getAlpacas();
+
+        let randomSpaceLettuce = [];
+
+        for (let i = 0; i < _.random(4, 10); i++) {
+            randomSpaceLettuce.push({
+                left: _.random(0, 700 - 25),
+                top: _.random(0, 500),
+                saturate: _.random(0.5, 2, true)
+            });
+        }
+
+        this.setState({
+            spaceLettuce: randomSpaceLettuce
+        });
     }
 
     @autobind
@@ -76,7 +91,7 @@ client_id=${clientId}\
             accessTokenObj = {};
         }
 
-        let accessToken = accessTokenObj.accessToken || currentHashParts.query(true)['access_token'];
+        let accessToken = currentHashParts.query(true)['access_token'] || accessTokenObj.accessToken;
         let client = GraphClient.init({
             authProvider: (done) => {
                 done(null, accessToken);
@@ -119,12 +134,24 @@ client_id=${clientId}\
         let goodAlpaca = {}, badAlpaca = {};
         Object.keys(mappedUsers).map((userId) => {
             if (storedGoodAlpaca && storedGoodAlpaca[userId]) {
-                goodAlpaca[userId] = mappedUsers[userId];
+                let ga = storedGoodAlpaca[userId];
+                goodAlpaca[userId] = { ...mappedUsers[userId], left: ga.left, top: ga.top, scaleX: ga.scaleX, hueRotation: ga.hueRotation, saturate: ga.saturate };
                 _.unset(mappedUsers, userId);
             } else if (storedBadAlpaca && storedBadAlpaca[userId]) {
-                badAlpaca[userId] = mappedUsers[userId];
+                let ga = storedGoodAlpaca[userId];
+                badAlpaca[userId] = { ...mappedUsers[userId], left: ga.left, top: ga.top, scaleX: ga.scaleX, hueRotation: ga.hueRotation, saturate: ga.saturate };
                 _.unset(mappedUsers, userId);
             }
+        });
+
+        Object.keys(mappedUsers).forEach(id => {
+            let alpaca = mappedUsers[id];
+
+            alpaca.left = _.random(0, 700 - 25);
+            alpaca.top = _.random(0, 500);
+            alpaca.scaleX = _.random(1, 2) == 2 ? -1 : 1;
+            alpaca.hueRotation = 0; //_.random(0, 360);
+            alpaca.saturate = _.random(0.5, 2, true);
         });
 
         this.setState({
@@ -234,7 +261,7 @@ client_id=${clientId}\
                         <span className="ms-font-xl ms-fontColor-white">{escape(this.props.description)}</span>
                     </div>
                 </div>
-                <AlpacaFarm alpaca={this.state.users} alpacaDropped={this.alpacaDropped} moveAlpaca={this.moveAlpaca}/>
+                <AlpacaFarm alpaca={this.state.users} spaceLettuce={this.state.spaceLettuce} alpacaDropped={this.alpacaDropped} moveAlpaca={this.moveAlpaca} />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}

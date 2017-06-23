@@ -4,6 +4,7 @@ export interface IAlpacaManagementState {
     users?: object;
     goodAlpaca?: object;
     badAlpaca?: object;
+    spaceLettuce?: Array<any>;
     isBadAlpacaCalloutVisible?: boolean;
     isGoodAlpacaCalloutVisible?: boolean;
 }
