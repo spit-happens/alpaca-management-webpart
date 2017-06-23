@@ -15,6 +15,7 @@ import { Client as GraphClient } from '@microsoft/microsoft-graph-client';
 import * as URI from 'urijs';
 import * as _ from 'lodash';
 import * as localforage from 'localforage';
+import * as XLSX from 'xlsx';
 
 const GoodAlpacaStorageKey = "alpaca-management-good-alpaca";
 const BadAlpacaStorageKey = "alpaca-management-bad-alpaca";
@@ -80,6 +81,71 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
             hueRotation: 0, //_.random(0, 360), -- this was too frilly.
             saturate: _.random(0.5, 2, true)
         };
+    }
+
+    @autobind
+    public getAlpacaSpreadsheet() {
+        const goodAlpacaWSName = "Good Alpaca";
+        const badAlpacaWSName = "Bad Alpaca";
+
+        let wb = { SheetNames: [], Sheets: {} };
+
+        /* make worksheets */
+        let goodAlpacaData = [];
+        Object.keys(this.state.goodAlpaca).map((id) => {
+            goodAlpacaData.push(this.state.goodAlpaca[id]);
+        });
+        let goodAlpacaWS = XLSX.utils.json_to_sheet(goodAlpacaData);
+        wb.SheetNames.push(goodAlpacaWSName);
+        wb.Sheets[goodAlpacaWSName] = goodAlpacaWS;
+
+        let badAlpacaData = [];
+        Object.keys(this.state.badAlpaca).map((id) => {
+            badAlpacaData.push(this.state.badAlpaca[id]);
+        });
+        let badAlpacaWS = XLSX.utils.json_to_sheet(badAlpacaData);
+        wb.SheetNames.push(badAlpacaWSName);
+        wb.Sheets[badAlpacaWSName] = badAlpacaWS;
+
+        let wbout = XLSX.write(wb, {
+            bookType: 'xlsx',
+            bookSST: true,
+            type: 'binary'
+        });
+
+        let xlsxBlob = new Blob([this.str2ab(wbout)], { type: "application/octet-stream" });
+        this.saveAs(xlsxBlob, "alpaca.xlsx");
+    }
+
+    private str2ab(str) {
+        if (typeof ArrayBuffer !== 'undefined') {
+            let buf = new ArrayBuffer(str.length);
+            let view = new Uint8Array(buf);
+            for (let i = 0; i != str.length; ++i) view[i] = str.charCodeAt(i) & 0xFF;
+            return buf;
+        } else {
+            let buf = new Array(str.length);
+            for (let i = 0; i != str.length; ++i) buf[i] = str.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+    }
+
+    private saveAs(blob, filename) {
+        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(blob, filename);
+        }
+        else {
+            var blobURL = window.URL.createObjectURL(blob);
+            var tempLink = document.createElement('a');
+            tempLink.style.display = 'none';
+            tempLink.href = blobURL;
+            tempLink.setAttribute('download', filename);
+            tempLink.setAttribute('target', '_blank');
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            document.body.removeChild(tempLink);
+            window.URL.revokeObjectURL(blobURL);
+        }
     }
 
     @autobind
@@ -322,15 +388,23 @@ client_id=${clientId}\
                     alpacaMoved={this.alpacaMoved}
                     alpacaDropped={this.alpacaDropped}
                     alpacaCalloutDismissed={this.alpacaCalloutDismissed}
-                    />
+                />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
-                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
+                    <div className="ms-Grid-col ms-u-sm3" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}
                     </div>
-                    <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetBadAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isBadAlpacaCalloutVisible: !prevState.isBadAlpacaCalloutVisible }))}>
+                    <div className="ms-Grid-col ms-u-sm3" ref={(e) => this._targetBadAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isBadAlpacaCalloutVisible: !prevState.isBadAlpacaCalloutVisible }))}>
                         # of Bad Alpaca: {Object.keys(this.state.badAlpaca).length}
                     </div>
-                    <div className="ms-Grid-col ms-u-sm4">
+                    <div className="ms-Grid-col ms-u-sm3">
+                        <PrimaryButton
+                            text='Get Alpaca Spreadsheet'
+                            onClick={this.getAlpacaSpreadsheet}
+                            iconProps={{ iconName: 'ExcelLogo' }}
+                            style={{ float: "right" }}
+                        />
+                    </div>
+                    <div className="ms-Grid-col ms-u-sm3">
                         <PrimaryButton
                             text='Refresh Alpacas'
                             onClick={this.refreshAlpacas}
