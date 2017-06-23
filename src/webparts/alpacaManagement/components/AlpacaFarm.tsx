@@ -23,7 +23,7 @@ const alpacaTarget = {
             top = Math.round(item.top + delta.y);
         }
 
-        component.moveAlpaca(item.id, left, top);
+        props.moveAlpaca(item.id, left, top);
     },
 };
 
@@ -36,7 +36,6 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         super(props);
 
         this.state = {
-            alpaca: {},
             spaceLettuce: []
         };
     }
@@ -64,42 +63,18 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, IAlpac
         }
 
         this.setState({
-            alpaca: this.props.alpaca,
             spaceLettuce: randomSpaceLettuce
         });
-    }
-
-    private moveAlpaca(id, left, top) {
-        if (!this.state.alpaca[id]) {
-            return;
-        }
-        this.setState(update(this.state, {
-            alpaca: {
-                [id]: {
-                    $merge: { left, top },
-                },
-            },
-        }));
     }
 
     @autobind
     private alpacaDropped(id, targetTitle) {
         this.props.alpacaDropped(id, targetTitle);
-        this.setState({
-            alpaca: this.props.alpaca
-        });
     }
 
     public render(): React.ReactElement<IAlpacaFarmProps> {
-        const { alpaca, spaceLettuce } = this.state;
-        const { hideSourceOnDrag, connectDropTarget, children } = this.props;
-
-        if (!alpaca || Object.keys(alpaca).length == 0) {
-            return (
-                <div className={styles.alpacaFarm}>
-                </div>
-            );
-        }
+        const { spaceLettuce } = this.state;
+        const { alpaca, hideSourceOnDrag, connectDropTarget, children } = this.props;
 
         let spaceLettuceCount = 0;
         return connectDropTarget(
