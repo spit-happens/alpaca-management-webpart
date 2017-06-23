@@ -17,6 +17,7 @@ import * as localforage from 'localforage';
 
 const GoodAlpacaStorageKey = "alpaca-management-good-alpaca";
 const BadAlpacaStorageKey = "alpaca-management-bad-alpaca";
+const AlpacaManagementAccessTokenStorageKey = "alpaca-management-access-token";
 
 export default class AlpacaManagement extends React.Component<IAlpacaManagementProps, IAlpacaManagementState> {
     private _targetBadAlpacaCalloutElement: any;
@@ -65,13 +66,17 @@ client_id=${clientId}\
 &redirect_uri=${currentUri.search('').fragment('').href()}\
 &scope=${desiredScope.join('%20')}`;
 
-        if (!currentHashParts.hasQuery("access_token")) {
+        let accessTokenObj: any = await localforage.getItem(AlpacaManagementAccessTokenStorageKey);
+        if (!accessTokenObj && !currentHashParts.hasQuery("access_token")) {
             window.location.href = authEndpointUri;
         }
 
         //TODO: Store the access token and other info in state.
+        if (!accessTokenObj) {
+            accessTokenObj = {};
+        }
 
-        let accessToken = currentHashParts.query(true)['access_token'];
+        let accessToken = accessTokenObj.accessToken || currentHashParts.query(true)['access_token'];
         let client = GraphClient.init({
             authProvider: (done) => {
                 done(null, accessToken);
@@ -95,6 +100,9 @@ client_id=${clientId}\
             //An error occurred, redirect to the auth endpoint.
             window.location.href = authEndpointUri;
         }
+
+        //Update stored access token
+        await localforage.setItem(AlpacaManagementAccessTokenStorageKey, { accessToken: accessToken });
 
         //Filter users
         let filteredUsers = _.remove(usersResult.value, (a: any) => {
