@@ -36,7 +36,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, void> 
         let spaceLettuceCount = 0;
         let alpacaPenCount = 0;
         return connectDropTarget(
-            <div className={styles.alpacaFarm}>
+            <div className={styles.alpacaFarm} style={{ height: this.props.farmSize, width: this.props.farmSize }}>
                 {
                     spaceLettuce.map((currentSpaceLettuce) => {
                         return (

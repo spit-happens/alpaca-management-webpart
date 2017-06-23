@@ -61,8 +61,8 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
 
         for (let i = 0; i < _.random(4, 10); i++) {
             randomSpaceLettuce.push({
-                left: _.random(0, 700 - 25),
-                top: _.random(0, 500),
+                left: _.random(0, this.props.farmSize - 25),
+                top: _.random(0, this.props.farmSize * .70),
                 saturate: _.random(0.5, 2, true)
             });
         }
@@ -74,8 +74,8 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
 
     private getRandomStyle(): IUserStyle {
         return {
-            left: _.random(0, 700 - 25),
-            top: _.random(0, 500),
+            left: _.random(0, this.props.farmSize - 25),
+            top: _.random(0, this.props.farmSize * .70),
             scaleX: _.random(1, 2) == 2 ? -1 : 1,
             hueRotation: 0, //_.random(0, 360), -- this was too frilly.
             saturate: _.random(0.5, 2, true)
@@ -314,13 +314,15 @@ client_id=${clientId}\
                     </div>
                 </div>
                 <AlpacaFarm
+                    farmSize={this.props.farmSize}
                     alpaca={this.state.users}
                     spaceLettuce={this.state.spaceLettuce}
                     alpacaPens={this.state.alpacaPens}
                     alpacaClicked={this.alpacaClicked}
                     alpacaMoved={this.alpacaMoved}
                     alpacaDropped={this.alpacaDropped}
-                    alpacaCalloutDismissed={this.alpacaCalloutDismissed} />
+                    alpacaCalloutDismissed={this.alpacaCalloutDismissed}
+                    />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}

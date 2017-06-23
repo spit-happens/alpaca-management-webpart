@@ -5,7 +5,8 @@ import { Version } from '@microsoft/sp-core-library';
 import {
   BaseClientSideWebPart,
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneSlider
 } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'alpacaManagementStrings';
@@ -20,6 +21,7 @@ export default class AlpacaManagementWebPart extends BaseClientSideWebPart<IAlpa
       AlpacaManagement,
       {
         description: this.properties.description,
+        farmSize: this.properties.farmSize || 700,
         context: this.context
       }
     );
@@ -44,6 +46,11 @@ export default class AlpacaManagementWebPart extends BaseClientSideWebPart<IAlpa
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneSlider('farmSize', {
+                  min: 200,
+                  max: 1000,
+                  label: 'Farm Size'
                 }),
                 PropertyPaneTextField('groupName', {
                   label: 'Group Name'

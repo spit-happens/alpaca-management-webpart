@@ -3,6 +3,7 @@ import { IUser } from './AlpacaTypes';
 export interface IAlpacaFarmProps {
     hideSourceOnDrag?: boolean;
     connectDropTarget?: (any) => any;
+    farmSize: number,
     alpaca: { [id: string]: IUser };
     spaceLettuce: Array<any>;
     alpacaPens: Array<any>;
