@@ -122,7 +122,7 @@ client_id=${clientId}\
             }
         });
 
-        let meResult: IUser, usersResult: IUserResponse
+        let meResult: IUser, usersResult: IUserResponse;
         try {
             meResult = await client.api('/me')
                 .get();
@@ -184,7 +184,36 @@ client_id=${clientId}\
     }
 
     @autobind
-    private moveAlpaca(id: string, left: number, top: number): void {
+    private alpacaClicked(id: string) {
+        this.setState((prevState, props) => {
+            const alpaca = prevState.users[id];
+            if (!alpaca) {
+                return;
+            }
+            alpaca.isCalloutVisible = !alpaca.isCalloutVisible;
+
+            return {
+                users: prevState.users
+            };
+        });
+    }
+
+    @autobind
+    private alpacaCalloutDismissed(id: string) {
+        this.setState((prevState, props) => {
+            const alpaca = prevState.users[id];
+            if (!alpaca) {
+                return;
+            }
+            alpaca.isCalloutVisible = false;
+            return {
+                users: prevState.users
+            };
+        });
+    }
+
+    @autobind
+    private alpacaMoved(id: string, left: number, top: number): void {
         if (!this.state.users[id]) {
             return;
         }
@@ -213,6 +242,7 @@ client_id=${clientId}\
             };
         });
 
+        wanderingAlpaca.isCalloutVisible = false;
         switch (penTitle) {
             case "Good Alpaca":
                 this.state.goodAlpaca[id] = wanderingAlpaca;
@@ -283,7 +313,14 @@ client_id=${clientId}\
                         <span className="ms-font-xl ms-fontColor-white">{escape(this.props.description)}</span>
                     </div>
                 </div>
-                <AlpacaFarm alpaca={this.state.users} spaceLettuce={this.state.spaceLettuce} alpacaPens={this.state.alpacaPens} alpacaDropped={this.alpacaDropped} moveAlpaca={this.moveAlpaca} />
+                <AlpacaFarm
+                    alpaca={this.state.users}
+                    spaceLettuce={this.state.spaceLettuce}
+                    alpacaPens={this.state.alpacaPens}
+                    alpacaClicked={this.alpacaClicked}
+                    alpacaMoved={this.alpacaMoved}
+                    alpacaDropped={this.alpacaDropped}
+                    alpacaCalloutDismissed={this.alpacaCalloutDismissed} />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}

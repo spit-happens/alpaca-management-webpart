@@ -20,7 +20,7 @@ const alpacaTarget = {
             top = Math.round(item.top + delta.y);
         }
 
-        props.moveAlpaca(item.id, left, top);
+        props.alpacaMoved(item.id, left, top);
     },
 };
 
@@ -50,7 +50,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, void> 
                         const currentAlpaca = alpaca[key];
 
                         return (
-                            <Alpaca key={`${key}`} alpaca={currentAlpaca} />
+                            <Alpaca key={`${key}`} alpaca={currentAlpaca} alpacaClicked={this.props.alpacaClicked} alpacaCalloutDismissed={this.props.alpacaCalloutDismissed}/>
                         );
                     })
                 }

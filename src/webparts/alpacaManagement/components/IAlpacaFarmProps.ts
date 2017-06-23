@@ -6,6 +6,8 @@ export interface IAlpacaFarmProps {
     alpaca: { [id: string]: IUser };
     spaceLettuce: Array<any>;
     alpacaPens: Array<any>;
-    moveAlpaca: (id: string, left: number, top: number) => void;
-    alpacaDropped: (id: string, penTitle: string) => void;
+    alpacaClicked?: (id: string) => void;
+    alpacaMoved?: (id: string, left: number, top: number) => void;
+    alpacaDropped?: (id: string, penTitle: string) => void;
+    alpacaCalloutDismissed?: (id: string) => void;
 }

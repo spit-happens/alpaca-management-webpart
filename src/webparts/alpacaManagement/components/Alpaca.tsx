@@ -19,14 +19,9 @@ const alpacaSource = {
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging(),
 }))
-export default class Alpaca extends React.Component<IAlpacaProps, any> {
-    public constructor(props) {
-        super(props);
-        this.state = {
-            isCalloutVisible: false
-        };
-    };
-
+export default class Alpaca extends React.Component<IAlpacaProps, void> {
+    private _alpacaElement;
+    
     public render() {
         const {
             alpaca,
@@ -37,7 +32,6 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
         } = this.props;
 
         const style = alpaca.style;
-        const { isCalloutVisible } = this.state;
         if (isDragging && hideSourceOnDrag) {
             return null;
         }
@@ -46,18 +40,17 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
             <div className={styles.alpaca}
                 title={alpaca.displayName}
                 style={{ left: style.left, top: style.top, transform: `scaleX(${style.scaleX})`, filter: `hue-rotate(${style.hueRotation}deg) saturate(${style.saturate})` }}
-                onClick={() => this.setState((prevState, props) => ({ isCalloutVisible: !prevState.isCalloutVisible }))}
-                ref={(e) => this.state.targetAlpacaElement = e}
+                onClick={() => this.props.alpacaClicked(alpaca.id)}
+                ref={(e) => this._alpacaElement = e}
             >
-                {children}
-                {isCalloutVisible ? (
+                {alpaca.isCalloutVisible ? (
                     <Callout
                         backgroundColor={"rgba(255, 255, 255, 0.8)"}
                         className={styles.alpacaCallout}
-                        targetElement={this.state.targetAlpacaElement}
+                        targetElement={this._alpacaElement}
                         isBeakVisible={true}
                         beakWidth={10}
-                        onDismiss={() => this.setState({ isCalloutVisible: false })}
+                        onDismiss={() => this.props.alpacaCalloutDismissed(alpaca.id)}
                         directionalHint={DirectionalHint.rightCenter}
                     >
                         <div className={styles.alpacaCalloutHeader}>

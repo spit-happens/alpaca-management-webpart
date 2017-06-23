@@ -5,4 +5,6 @@ export interface IAlpacaProps {
     isDragging?: boolean;
     hideSourceOnDrag?: boolean;
     alpaca: IUser;
+    alpacaClicked?: (id: string) => void;
+    alpacaCalloutDismissed?: (id: string) => void;
 }
