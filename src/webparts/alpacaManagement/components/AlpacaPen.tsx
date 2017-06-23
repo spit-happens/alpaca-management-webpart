@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IAlpacaPenProps } from './IAlpacaPenProps';
 import { DropTarget } from 'react-dnd';
-import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
+import AlpacaFarmObjectTypes from './AlpacaFarmObjectTypes';
 
 const style = {
     border: '1px dashed rgba(0,0,0,0.6)',
@@ -32,7 +32,7 @@ const penTarget = {
     }
 };
 
-@DropTarget(AlpacaFarmAnimalTypes.Alpaca, penTarget, (connect, monitor) => ({
+@DropTarget(AlpacaFarmObjectTypes.Alpaca, penTarget, (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
     isOverCurrent: monitor.isOver({ shallow: true }),

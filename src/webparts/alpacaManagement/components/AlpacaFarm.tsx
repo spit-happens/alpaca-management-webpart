@@ -6,7 +6,7 @@ import { DropTarget, DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Alpaca from './Alpaca';
 import AlpacaPen from './AlpacaPen';
-import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
+import AlpacaFarmObjectTypes from './AlpacaFarmObjectTypes';
 
 const alpacaTarget = {
     drop(props: IAlpacaFarmProps, monitor, component) {
@@ -25,7 +25,7 @@ const alpacaTarget = {
 };
 
 @DragDropContext(HTML5Backend)
-@DropTarget(AlpacaFarmAnimalTypes.Alpaca, alpacaTarget, connect => ({
+@DropTarget(AlpacaFarmObjectTypes.Alpaca, alpacaTarget, connect => ({
     connectDropTarget: connect.dropTarget(),
 }))
 export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, void> {
@@ -50,7 +50,7 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, void> 
                         const currentAlpaca = alpaca[key];
 
                         return (
-                            <Alpaca key={`${key}`} id={`${key}`} alpaca={currentAlpaca} left={currentAlpaca.left} top={currentAlpaca.top} scaleX={currentAlpaca.scaleX} hueRotation={currentAlpaca.hueRotation} saturate={currentAlpaca.saturate} />
+                            <Alpaca key={`${key}`} alpaca={currentAlpaca} />
                         );
                     })
                 }

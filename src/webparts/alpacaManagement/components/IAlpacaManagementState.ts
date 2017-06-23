@@ -1,9 +1,11 @@
+import { IUser, UserHash } from './AlpacaTypes'
+
 export interface IAlpacaManagementState {
     loading?: boolean;
-    me?: any;
-    users?: object;
-    goodAlpaca?: object;
-    badAlpaca?: object;
+    me?: IUser;
+    users?: UserHash
+    goodAlpaca?: UserHash;
+    badAlpaca?: UserHash;
     spaceLettuce?: Array<any>;
     isBadAlpacaCalloutVisible?: boolean;
     isGoodAlpacaCalloutVisible?: boolean;

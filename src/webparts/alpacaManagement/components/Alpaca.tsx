@@ -3,16 +3,19 @@ import styles from './AlpacaManagement.module.scss';
 import { IAlpacaProps } from './IAlpacaProps';
 import { Callout, DirectionalHint } from 'office-ui-fabric-react/lib/Callout';
 import { DragSource } from 'react-dnd';
-import AlpacaFarmAnimalTypes from './AlpacaFarmAnimalTypes';
+import AlpacaFarmObjectTypes from './AlpacaFarmObjectTypes';
 
 const alpacaSource = {
-    beginDrag(props) {
-        const { id, left, top } = props;
-        return { id, left, top };
+    beginDrag(props: IAlpacaProps) {
+        return {
+            id: props.alpaca.id,
+            left: props.alpaca.style.left,
+            top: props.alpaca.style.top
+        };
     },
 };
 
-@DragSource(AlpacaFarmAnimalTypes.Alpaca, alpacaSource, (connect, monitor) => ({
+@DragSource(AlpacaFarmObjectTypes.Alpaca, alpacaSource, (connect, monitor) => ({
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging(),
 }))
@@ -24,25 +27,16 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
         };
     };
 
-    public static defaultProps: Partial<IAlpacaProps> = {
-        left: 0,
-        top: 0
-    };
-
     public render() {
         const {
             alpaca,
             hideSourceOnDrag,
-            left,
-            top,
-            scaleX,
-            hueRotation,
-            saturate,
             connectDragSource,
             isDragging,
             children
         } = this.props;
 
+        const style = alpaca.style;
         const { isCalloutVisible } = this.state;
         if (isDragging && hideSourceOnDrag) {
             return null;
@@ -51,7 +45,7 @@ export default class Alpaca extends React.Component<IAlpacaProps, any> {
         return connectDragSource(
             <div className={styles.alpaca}
                 title={alpaca.displayName}
-                style={{ left, top, transform: `scaleX(${scaleX})`, filter: `hue-rotate(${hueRotation}deg) saturate(${saturate})` }}
+                style={{ left: style.left, top: style.top, transform: `scaleX(${style.scaleX})`, filter: `hue-rotate(${style.hueRotation}deg) saturate(${style.saturate})` }}
                 onClick={() => this.setState((prevState, props) => ({ isCalloutVisible: !prevState.isCalloutVisible }))}
                 ref={(e) => this.state.targetAlpacaElement = e}
             >

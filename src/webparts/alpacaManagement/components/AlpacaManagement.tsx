@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as update from 'react/lib/update';
 import AlpacaFarm from './AlpacaFarm';
 import styles from './AlpacaManagement.module.scss';
+import { IUserResponse, IUser, IUserStyle, UserHash } from './AlpacaTypes';
 import { IAlpacaManagementProps } from './IAlpacaManagementProps';
 import { IAlpacaManagementState } from './IAlpacaManagementState';
 import { escape } from '@microsoft/sp-lodash-subset';
@@ -28,7 +29,7 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
 
         this.state = {
             loading: false,
-            me: [],
+            me: null,
             users: {},
             goodAlpaca: {},
             badAlpaca: {},
@@ -71,6 +72,16 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
         });
     }
 
+    private getRandomStyle(): IUserStyle {
+        return {
+            left: _.random(0, 700 - 25),
+            top: _.random(0, 500),
+            scaleX: _.random(1, 2) == 2 ? -1 : 1,
+            hueRotation: 0, //_.random(0, 360), -- this was too frilly.
+            saturate: _.random(0.5, 2, true)
+        };
+    }
+
     @autobind
     public async refreshAlpacas() {
         await localforage.removeItem(GoodAlpacaStorageKey);
@@ -100,7 +111,6 @@ client_id=${clientId}\
             window.location.href = authEndpointUri;
         }
 
-        //TODO: Store the access token and other info in state.
         if (!accessTokenObj) {
             accessTokenObj = {};
         }
@@ -112,7 +122,7 @@ client_id=${clientId}\
             }
         });
 
-        let meResult, usersResult;
+        let meResult: IUser, usersResult: IUserResponse
         try {
             meResult = await client.api('/me')
                 .get();
@@ -140,37 +150,33 @@ client_id=${clientId}\
             }
         });
 
-        let mappedUsers = _.zipObject(_.map(filteredUsers, "id"), filteredUsers);
+        let mappedUsers = _.zipObject(_.map(filteredUsers, "id"), filteredUsers) as UserHash;
 
-        let storedGoodAlpaca = await localforage.getItem(GoodAlpacaStorageKey);
-        let storedBadAlpaca = await localforage.getItem(BadAlpacaStorageKey);
+        let storedGoodAlpaca = await localforage.getItem(GoodAlpacaStorageKey) as UserHash;
+        let storedBadAlpaca = await localforage.getItem(BadAlpacaStorageKey) as UserHash;
 
-        let goodAlpaca = {}, badAlpaca = {};
+        let goodAlpaca: UserHash = {}, badAlpaca: UserHash = {};
         Object.keys(mappedUsers).map((userId) => {
             if (storedGoodAlpaca && storedGoodAlpaca[userId]) {
                 let ga = storedGoodAlpaca[userId];
-                goodAlpaca[userId] = { ...mappedUsers[userId], left: ga.left, top: ga.top, scaleX: ga.scaleX, hueRotation: ga.hueRotation, saturate: ga.saturate };
+                //This lets us pick up any changes to the user (email, name change, so on) but still maintain the previous position/style.
+                goodAlpaca[userId] = { ...mappedUsers[userId], style: ga.style || this.getRandomStyle() };
                 _.unset(mappedUsers, userId);
             } else if (storedBadAlpaca && storedBadAlpaca[userId]) {
-                let ga = storedGoodAlpaca[userId];
-                badAlpaca[userId] = { ...mappedUsers[userId], left: ga.left, top: ga.top, scaleX: ga.scaleX, hueRotation: ga.hueRotation, saturate: ga.saturate };
+                let ga = storedBadAlpaca[userId];
+                badAlpaca[userId] = { ...mappedUsers[userId], style: ga.style || this.getRandomStyle() };
                 _.unset(mappedUsers, userId);
             }
         });
 
         Object.keys(mappedUsers).forEach(id => {
             let alpaca = mappedUsers[id];
-
-            alpaca.left = _.random(0, 700 - 25);
-            alpaca.top = _.random(0, 500);
-            alpaca.scaleX = _.random(1, 2) == 2 ? -1 : 1;
-            alpaca.hueRotation = 0; //_.random(0, 360);
-            alpaca.saturate = _.random(0.5, 2, true);
+            alpaca.style = this.getRandomStyle();
         });
 
         this.setState({
             loading: false,
-            me: meResult.value,
+            me: meResult,
             users: mappedUsers,
             goodAlpaca: goodAlpaca,
             badAlpaca: badAlpaca
@@ -182,13 +188,15 @@ client_id=${clientId}\
         if (!this.state.users[id]) {
             return;
         }
-        this.setState(update(this.state, {
-            users: {
-                [id]: {
-                    $merge: { left, top },
-                },
-            },
-        }));
+
+        this.setState((prevState, props) => {
+            let alpaca = prevState.users[id];
+            alpaca.style.left = left;
+            alpaca.style.top = top;
+            return {
+                users: prevState.users
+            };
+        });
     }
 
     @autobind
@@ -309,9 +317,15 @@ client_id=${clientId}\
                         <div className={styles.alpacaCountCalloutBody}>
                             {
                                 Object.keys(goodAlpaca).map(id => {
-                                    let currentAlpaca = goodAlpaca[id];
+                                    const currentAlpaca = goodAlpaca[id];
+                                    const style = currentAlpaca.style;
                                     return (
-                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} onClick={() => this.putBackAlpaca(currentAlpaca, "Good Alpaca")} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
+                                        <div key={currentAlpaca.id}
+                                            title={currentAlpaca.displayName}
+                                            onClick={() => this.putBackAlpaca(currentAlpaca, "Good Alpaca")}
+                                            className={styles.alpaca}
+                                            style={{ float: "left", cursor: "pointer", position: "relative", transform: `scaleX(${style.scaleX})`, filter: `hue-rotate(${style.hueRotation}deg) saturate(${style.saturate})` }}
+                                        />
                                     );
                                 })
                             }
@@ -335,9 +349,15 @@ client_id=${clientId}\
                         <div className={styles.alpacaCountCalloutBody}>
                             {
                                 Object.keys(badAlpaca).map(id => {
-                                    let currentAlpaca = badAlpaca[id];
+                                    const currentAlpaca = badAlpaca[id];
+                                    const style = currentAlpaca.style;
                                     return (
-                                        <div key={currentAlpaca.id} title={currentAlpaca.displayName} onClick={() => this.putBackAlpaca(currentAlpaca, "Bad Alpaca")} className={styles.alpaca} style={{ float: "left", cursor: "pointer", position: "relative" }} />
+                                        <div key={currentAlpaca.id}
+                                            title={currentAlpaca.displayName}
+                                            onClick={() => this.putBackAlpaca(currentAlpaca, "Bad Alpaca")}
+                                            className={styles.alpaca}
+                                            style={{ float: "left", cursor: "pointer", position: "relative", transform: `scaleX(${style.scaleX})`, filter: `hue-rotate(${style.hueRotation}deg) saturate(${style.saturate})` }}
+                                        />
                                     );
                                 })
                             }
