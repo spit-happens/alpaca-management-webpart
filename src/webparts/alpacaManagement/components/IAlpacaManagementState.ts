@@ -7,4 +7,5 @@ export interface IAlpacaManagementState {
     spaceLettuce?: Array<any>;
     isBadAlpacaCalloutVisible?: boolean;
     isGoodAlpacaCalloutVisible?: boolean;
+    alpacaPens?: Array<any>;
 }

@@ -31,9 +31,10 @@ const alpacaTarget = {
 export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, void> {
     public render(): React.ReactElement<IAlpacaFarmProps> {
 
-        const { alpaca, spaceLettuce, hideSourceOnDrag, connectDropTarget, children } = this.props;
+        const { alpaca, spaceLettuce, alpacaPens, hideSourceOnDrag, connectDropTarget, children } = this.props;
 
         let spaceLettuceCount = 0;
+        let alpacaPenCount = 0;
         return connectDropTarget(
             <div className={styles.alpacaFarm}>
                 {
@@ -53,9 +54,14 @@ export default class AlpacaFarm extends React.Component<IAlpacaFarmProps, void> 
                         );
                     })
                 }
-                
-                <AlpacaPen title={"Good Alpaca"} left={100} top={525} dropColor="green" alpacaDropped={this.props.alpacaDropped} />
-                <AlpacaPen title={"Bad Alpaca"} left={370} top={580} dropColor="red" alpacaDropped={this.props.alpacaDropped} />
+
+                {
+                    alpacaPens.map((alpacaPen) => {
+                        return (
+                            <AlpacaPen key={alpacaPenCount++} title={alpacaPen.title} left={alpacaPen.left} top={alpacaPen.top} dropColor={alpacaPen.dropColor} alpacaDropped={this.props.alpacaDropped} />
+                        );
+                    })
+                }
             </div>
         );
     }

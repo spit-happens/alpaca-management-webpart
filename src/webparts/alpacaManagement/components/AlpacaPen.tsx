@@ -12,7 +12,8 @@ const style = {
     margin: '1rem',
     textAlign: 'center',
     fontSize: '1rem',
-    position: 'absolute'
+    position: 'absolute',
+    userSelect: 'none'
 };
 
 const penTarget = {

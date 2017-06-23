@@ -34,7 +34,21 @@ export default class AlpacaManagement extends React.Component<IAlpacaManagementP
             badAlpaca: {},
             spaceLettuce: [],
             isGoodAlpacaCalloutVisible: false,
-            isBadAlpacaCalloutVisible: false
+            isBadAlpacaCalloutVisible: false,
+            alpacaPens: [
+                {
+                    title: "Good Alpaca",
+                    left: 100,
+                    top: 525,
+                    dropColor: "green"
+                },
+                {
+                    title: "Bad Alpaca",
+                    left: 370,
+                    top: 580,
+                    dropColor: "red"
+                }
+            ]
         };
         Log.info("Alpaca Management", "Initialized");
     }
@@ -261,7 +275,7 @@ client_id=${clientId}\
                         <span className="ms-font-xl ms-fontColor-white">{escape(this.props.description)}</span>
                     </div>
                 </div>
-                <AlpacaFarm alpaca={this.state.users} spaceLettuce={this.state.spaceLettuce} alpacaDropped={this.alpacaDropped} moveAlpaca={this.moveAlpaca} />
+                <AlpacaFarm alpaca={this.state.users} spaceLettuce={this.state.spaceLettuce} alpacaPens={this.state.alpacaPens} alpacaDropped={this.alpacaDropped} moveAlpaca={this.moveAlpaca} />
                 <div className={`ms-Grid-row ${styles.footerRow}`}>
                     <div className="ms-Grid-col ms-u-sm4" ref={(e) => this._targetGoodAlpacaCalloutElement = e} onClick={() => this.setState((prevState, props) => ({ isGoodAlpacaCalloutVisible: !prevState.isGoodAlpacaCalloutVisible }))}>
                         # of Good Alpaca: {Object.keys(this.state.goodAlpaca).length}
