@@ -8,7 +8,7 @@ Using SPFx, Office UI Fabric React, Graph SDK and various other bits, this SPFx 
 
 In Action:
 <p align="center">
-  <img src="https://github.com/spithappens/alpaca-management-webpart/blob/master/AlpacaManagementScreenshot-4.gif?raw=true" width="500">
+  <img src="https://github.com/spit-happens/alpaca-management-webpart/blob/master/Alpaca.gif?raw=true" width="500">
 </p>
 
 ScreenShot:
