@@ -6,6 +6,12 @@ Using SPFx, Office UI Fabric React, Graph SDK and various other bits, this SPFx 
 
 > New! Alpaca Management uses browser storage so that your progress is stored and the Alpaca don't need to be moved as frequently. The alpaca love that!
 
+In Action:
+<p align="center">
+  <img src="https://github.com/spithappens/alpaca-management-webpart/blob/master/AlpacaManagementScreenshot-4.gif?raw=true" width="500">
+</p>
+
+ScreenShot:
 <p align="center">
   <img src="https://github.com/spithappens/alpaca-management-webpart/blob/master/AlpacaManagementScreenshot-4.png?raw=true" width="1200">
 </p>
